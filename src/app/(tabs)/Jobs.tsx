@@ -1,3 +1,5 @@
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { getJobs } from '../../../services/api';
@@ -29,15 +31,36 @@ export default function JobsScreen() {
     'In Progress': 'bg-blue-100',
     'Not Started': 'bg-gray-100',
   };
-
-  const priorityStyle = {
-    High: 'text-red-500',
-  }
+  const statusText = {
+    Completed: 'text-green-700',
+    'In Progress': 'text-blue-700',
+    'Not Started': 'text-gray-700',
+  };
+  const priorityStyles = {
+    High: { background: 'bg-red-100', text: 'text-red-700' },
+    Medium: { background: 'bg-amber-100', text: 'text-amber-700' },
+    Low: { background: 'bg-green-100', text: 'text-green-700' },
+  };
 
   return (
-    <ScrollView className="flex-1 bg-gray-100">
-      <View className="p-4">
-        <View className="mb-4 flex-row justify-evenly flex-nowrap gap-2">
+    <ScrollView className="flex-1 bg-gray-100" contentContainerClassName="pb-8">
+      <View className="px-4 pt-6">
+        <View className="mb-5">
+          <Text className="mb-2 text-xs font-semibold uppercase tracking-widest text-blue-600">
+            Field operations
+          </Text>
+          <Text className="text-3xl font-bold text-gray-900">Jobs</Text>
+          <Text className="mt-1 text-base text-gray-500">
+            Review and track your assignments.
+          </Text>
+        </View>
+
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          className="mb-5"
+          contentContainerClassName="gap-2"
+        >
           {filters.map(item => {
             const isActive = filter === item;
 
@@ -45,11 +68,11 @@ export default function JobsScreen() {
               <Pressable
                 key={item}
                 onPress={() => setFilter(item)}
-                className={`rounded-2xl px-4 py-3 ${isActive ? 'bg-blue-600' : 'bg-white border border-gray-300'
+                className={`rounded-full border px-4 py-2.5 ${isActive ? 'border-blue-600 bg-blue-600' : 'border-gray-200 bg-white'
                   }`}
               >
                 <Text
-                  className={`text-base font-semibold ${isActive ? 'text-white' : 'text-gray-700'
+                  className={`text-sm font-semibold ${isActive ? 'text-white' : 'text-gray-700'
                     }`}
                 >
                   {item}
@@ -57,40 +80,73 @@ export default function JobsScreen() {
               </Pressable>
             );
           })}
-        </View>
+        </ScrollView>
 
         <View className="gap-3">
           {filteredJobs.length > 0 ? (
             filteredJobs.map(job => (
-              <View
+              <Pressable
                 key={job.id}
-                className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-                <Text className="mb-2 text-lg font-bold text-gray-900">
-                  Job #{job.id}
-                </Text>
-
-                <Text className={`mb-1 text-sm text-gray-600 ${priorityStyle[job.priority as keyof typeof priorityStyle] ?? 'text-grey-600'}`}>
-                  Priority: {job.priority}
-                </Text>
-
-                <Text className="mb-3 text-sm text-gray-600">
-                  Location: {job.location}
-                </Text>
-
+                accessibilityRole="button"
+                accessibilityLabel={`View job ${job.id}${job.title ? `, ${job.title}` : ''}`}
+                onPress={() =>
+                  router.push({
+                    pathname: '/[JobDetails]',
+                    params: { JobDetails: String(job.id) },
+                  })
+                }
+                className="rounded-2xl active:bg-gray-50"
+              >
                 <View
-                  className={`self-start rounded-full px-3 py-1 ${statusBackground[job.status as keyof typeof statusBackground] ??
-                    'bg-gray-100'
-                    }`}>
-                  <Text className="text-sm font-semibold text-gray-700">
-                    {job.status}
-                  </Text>
+                  className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
+                  <View className="mb-3 flex-row items-start justify-between">
+                    <View className="mr-3 flex-1">
+                      <Text className="mb-1 text-xs font-semibold uppercase tracking-wide text-blue-600">
+                        Job #{job.id}
+                      </Text>
+                      <Text className="text-base font-bold text-gray-900">
+                        {job.title || 'Job assignment'}
+                      </Text>
+                    </View>
+                    <View className="h-9 w-9 items-center justify-center rounded-xl bg-blue-50">
+                      <Ionicons name="briefcase-outline" size={19} color="#2563eb" />
+                    </View>
+                  </View>
+
+                  <View className="mb-3 flex-row items-center">
+                    <Ionicons name="location-outline" size={16} color="#6b7280" />
+                    <Text className="ml-1.5 text-sm text-gray-600">
+                      {job.location || 'Location not specified'}
+                    </Text>
+                  </View>
+
+                  <View className="flex-row flex-wrap gap-2">
+                    {!!job.status && (
+                      <View className={`rounded-full px-3 py-1.5 ${statusBackground[job.status as keyof typeof statusBackground] ?? 'bg-gray-100'}`}>
+                        <Text className={`text-xs font-semibold ${statusText[job.status as keyof typeof statusText] ?? 'text-gray-700'}`}>
+                          {job.status}
+                        </Text>
+                      </View>
+                    )}
+                    {!!job.priority && (
+                      <View className={`rounded-full px-3 py-1.5 ${priorityStyles[job.priority as keyof typeof priorityStyles]?.background ?? 'bg-gray-100'}`}>
+                        <Text className={`text-xs font-semibold ${priorityStyles[job.priority as keyof typeof priorityStyles]?.text ?? 'text-gray-700'}`}>
+                          {job.priority} priority
+                        </Text>
+                      </View>
+                    )}
+                  </View>
                 </View>
-              </View>
+              </Pressable>
             ))
           ) : (
-            <View className="items-center rounded-xl bg-white p-6">
-              <Text className="text-base font-medium text-gray-500">
-                No jobs found.
+            <View className="items-center rounded-2xl border border-gray-200 bg-white px-5 py-8">
+              <View className="mb-3 h-11 w-11 items-center justify-center rounded-full bg-blue-50">
+                <Ionicons name="briefcase-outline" size={22} color="#2563eb" />
+              </View>
+              <Text className="text-base font-semibold text-gray-900">No jobs found</Text>
+              <Text className="mt-1 text-center text-sm text-gray-500">
+                Try another status filter to see more assignments.
               </Text>
             </View>
           )}
