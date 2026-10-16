@@ -179,10 +179,13 @@ export default function JobDetailsScreen() {
             })
           }
         >
-          <Text className="text-base font-semibold text-white">Start Work</Text>
+          <View className='flex-row justify-center'>
+            <Ionicons name="caret-forward-outline" size={20} color="white"></Ionicons>
+            <Text className="text-base font-semibold text-white">Start Work</Text>
+          </View>
         </Pressable>
-        <Pressable className="items-center rounded-xl bg-blue-600 px-4 py-4">
-          <Text className="text-base font-semibold text-white">Complete Job</Text>
+        <Pressable className="items-center rounded-xl border border-blue-500 px-4 py-4">
+          <Text className="text-base text-black font-semibold text-blue-600">Complete Job</Text>
         </Pressable>
       </View>
     </ScrollView>
