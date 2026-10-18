@@ -3,6 +3,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { TabBar, TabView } from 'react-native-tab-view';
 import { getJobs } from '../../services/api';
 
@@ -198,56 +199,62 @@ export default function SiteNotesScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-100">
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-sm text-gray-500">Loading job...</Text>
-      </View>
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+        <View className="flex-1 items-center justify-center bg-gray-100">
+          <ActivityIndicator size="large" color="#2563eb" />
+          <Text className="mt-3 text-sm text-gray-500">Loading job...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (error || !job) {
     return (
-      <View className="flex-1 bg-gray-100 p-5">
-        <Text className="text-base font-medium text-red-700">
-          {error || 'Job not found.'}
-        </Text>
-      </View>
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+        <View className="flex-1 bg-gray-100 p-5">
+          <Text className="text-base font-medium text-red-700">
+            {error || 'Job not found.'}
+          </Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View className="flex-1 bg-gray-100 p-4">
-      <Pressable
-        accessibilityRole="button"
-        onPress={() => router.back()}
-        className="mb-4 self-start rounded-full border border-gray-200 bg-white px-4 py-2.5"
-      >
-        <Text className="text-sm font-semibold text-blue-700">‹ Back to job</Text>
-      </Pressable>
+    <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
+      <View className="flex-1 p-4">
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.back()}
+          className="mb-4 self-start rounded-full border border-gray-200 bg-white px-4 py-2.5"
+        >
+          <Text className="text-sm font-semibold text-blue-700">‹ Back to job</Text>
+        </Pressable>
 
-      <TabView
-        style={{ flex: 1 }}
-        navigationState={{ index, routes }}
-        onIndexChange={setIndex}
-        commonOptions={{ labelStyle: styles.tabLabel }}
-        renderTabBar={(props) => (
-          <TabBar
-            {...props}
-            activeColor="#1d4ed8"
-            inactiveColor="#6b7280"
-            pressColor="#dbeafe"
-            style={styles.tabBar}
-            indicatorStyle={styles.tabIndicator}
-          />
-        )}
-        renderScene={({ route }) => {
-          if (route.key === 'first') {
-            return <FirstRoute job={job} />;
-          }
+        <TabView
+          style={{ flex: 1 }}
+          navigationState={{ index, routes }}
+          onIndexChange={setIndex}
+          commonOptions={{ labelStyle: styles.tabLabel }}
+          renderTabBar={(props) => (
+            <TabBar
+              {...props}
+              activeColor="#1d4ed8"
+              inactiveColor="#6b7280"
+              pressColor="#dbeafe"
+              style={styles.tabBar}
+              indicatorStyle={styles.tabIndicator}
+            />
+          )}
+          renderScene={({ route }) => {
+            if (route.key === 'first') {
+              return <FirstRoute job={job} />;
+            }
 
-          return <SecondRoute />;
-        }}
-      />
-    </View>
+            return <SecondRoute />;
+          }}
+        />
+      </View>
+    </SafeAreaView>
   );
 }

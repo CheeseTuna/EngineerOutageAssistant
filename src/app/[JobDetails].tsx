@@ -3,6 +3,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { getJobs } from '../../services/api';
 import OutageMap from '../components/OutageMap';
 
@@ -58,34 +59,38 @@ export default function JobDetailsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-gray-100">
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-sm text-gray-500">Loading job details...</Text>
-      </View>
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+        <View className="flex-1 items-center justify-center bg-gray-100">
+          <ActivityIndicator size="large" color="#2563eb" />
+          <Text className="mt-3 text-sm text-gray-500">Loading job details...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   if (error || !job) {
     return (
-      <View className="flex-1 bg-gray-100 p-5">
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-          className="mb-6 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white"
-          onPress={() => router.back()}
-        >
-          <Ionicons name="arrow-back" size={20} color="#374151" />
-        </Pressable>
-        <View className="rounded-2xl border border-gray-200 bg-white p-5">
-          <View className="mb-3 h-11 w-11 items-center justify-center rounded-full bg-red-100">
-            <Ionicons name="alert-circle-outline" size={23} color="#dc2626" />
+      <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1 }}>
+        <View className="flex-1 bg-gray-100 p-5">
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+            className="mb-6 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white"
+            onPress={() => router.back()}
+          >
+            <Ionicons name="arrow-back" size={20} color="#374151" />
+          </Pressable>
+          <View className="rounded-2xl border border-gray-200 bg-white p-5">
+            <View className="mb-3 h-11 w-11 items-center justify-center rounded-full bg-red-100">
+              <Ionicons name="alert-circle-outline" size={23} color="#dc2626" />
+            </View>
+            <Text className="text-lg font-bold text-gray-900">Couldn’t load this job</Text>
+            <Text className="mt-2 text-sm leading-5 text-gray-500">
+              {error || 'Job not found.'}
+            </Text>
           </View>
-          <Text className="text-lg font-bold text-gray-900">Couldn’t load this job</Text>
-          <Text className="mt-2 text-sm leading-5 text-gray-500">
-            {error || 'Job not found.'}
-          </Text>
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
@@ -111,15 +116,16 @@ export default function JobDetailsScreen() {
   }[job.priority ?? ''] ?? 'text-gray-700';
 
   return (
-    <ScrollView className="flex-1 bg-gray-100" contentContainerClassName="p-4 pb-8">
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-        className="mb-5 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white"
-        onPress={() => router.back()}
-      >
-        <Ionicons name="arrow-back" size={20} color="#374151" />
-      </Pressable>
+    <SafeAreaView edges={['top', 'bottom']} style={{ flex: 1, backgroundColor: '#f3f4f6' }}>
+      <ScrollView className="flex-1" contentContainerClassName="p-4 pb-8">
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+          className="mb-5 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white"
+          onPress={() => router.back()}
+        >
+          <Ionicons name="arrow-back" size={20} color="#374151" />
+        </Pressable>
 
       <View className="mb-4 rounded-2xl border border-gray-200 bg-white p-4 shadow-sm">
         <View className="mb-3 flex-row items-center">
@@ -188,6 +194,7 @@ export default function JobDetailsScreen() {
           <Text className="text-base text-black font-semibold text-blue-600">Complete Job</Text>
         </Pressable>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
